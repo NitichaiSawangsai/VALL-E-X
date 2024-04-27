@@ -619,6 +619,16 @@ def main():
                               outputs=[text_output_4, audio_output_4])
 
     webbrowser.open("http://127.0.0.1:7860")
+    
+    
+    from google.colab import userdata
+    from pyngrok import ngrok
+
+    ngrok.kill()
+    ngrok.set_auth_token(userdata.get('authtoken_ngrok'))
+    http_tunnel = ngrok.connect("7864")
+    print("URL: ", http_tunnel)
+
     app.launch()
 
 if __name__ == "__main__":
