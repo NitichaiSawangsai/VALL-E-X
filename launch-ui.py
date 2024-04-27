@@ -22,7 +22,7 @@ else:
 os.environ["PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION"] = "python"
 
 import langid
-langid.set_languages(['en', 'zh', 'ja'])
+langid.set_languages(['en', 'zh', 'ja', 'th'])
 
 import nltk
 nltk.data.path = nltk.data.path + [os.path.join(os.getcwd(), "nltk_data")]
@@ -59,7 +59,7 @@ torch._C._jit_set_profiling_executor(False)
 torch._C._jit_set_profiling_mode(False)
 torch._C._set_graph_executor_optimize(False)
 
-text_tokenizer = PhonemeBpeTokenizer(tokenizer_path="./utils/g2p/bpe_69.json")
+text_tokenizer = PhonemeBpeTokenizer(tokenizer_path="./utils/g2p/bpe_1024.json")
 text_collater = get_text_token_collater()
 
 device = torch.device("cpu")
