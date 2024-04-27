@@ -22,7 +22,7 @@ else:
 os.environ["PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION"] = "python"
 
 import langid
-langid.set_languages(['en', 'zh', 'ja', 'th'])
+langid.set_languages(['en', 'zh', 'ja'])
 
 import nltk
 nltk.data.path = nltk.data.path + [os.path.join(os.getcwd(), "nltk_data")]
@@ -509,7 +509,7 @@ def infer_long_text(text, preset_prompt, prompt=None, language='auto', accent='n
 
 
 def main():
-    app = gr.Blocks(title="voice engine version 1")
+    app = gr.Blocks(title="voice engine version 1.1")
     with app:
         gr.Markdown(top_md)
         with gr.Tab("Infer from audio"):
@@ -520,8 +520,8 @@ def main():
                     textbox = gr.TextArea(label="Text",
                                           placeholder="Type your sentence here",
                                           value="Welcome back, Master. What can I do for you today?", elem_id=f"tts-input")
-                    language_dropdown = gr.Dropdown(choices=['auto-detect', 'English', '中文', '日本語', 'Thai'], value='auto-detect', label='language')
-                    accent_dropdown = gr.Dropdown(choices=['no-accent', 'English', '中文', '日本語', 'Thai'], value='no-accent', label='accent')
+                    language_dropdown = gr.Dropdown(choices=['auto-detect', 'English', '中文', '日本語'], value='auto-detect', label='language')
+                    accent_dropdown = gr.Dropdown(choices=['no-accent', 'English', '中文', '日本語'], value='no-accent', label='accent')
                     textbox_transcript = gr.TextArea(label="Transcript",
                                           placeholder="Write transcript here. (leave empty to use whisper)",
                                           value="", elem_id=f"prompt-name")
