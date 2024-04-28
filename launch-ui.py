@@ -9,7 +9,6 @@ import platform
 import webbrowser
 import sys
 from datetime import datetime
-import librosa
 
 print(f"default encoding is {sys.getdefaultencoding()},file system encoding is {sys.getfilesystemencoding()}")
 print(f"You are using Python version {platform.python_version()}")
@@ -506,51 +505,22 @@ def infer_long_text(text, preset_prompt, prompt=None, language='auto', accent='n
         # message = f"Cut into {len(sentences)} sentences"
         # return message, (24000, samples.squeeze(0).cpu().numpy())
     
-        
-        # แปลงข้อมูล Tensor เป็นเสียง
-        def save_audio_file(samples, output_file_path, sr=44100):
-            samples = samples.squeeze(0).cpu().numpy()  # แปลงเป็น numpy array
-            librosa.output.write_wav(output_file_path, samples, sr)  # บันทึกเสียงในรูปแบบ WAV
+        print("\n >>>>> model.to('cpu') <<<<< ")
+        model.to('cpu')
+        message = f"full into {len(sentences)} sentences"
+        output_message, samples = message, (len(sentences), samples.squeeze(0).cpu().numpy())
 
-
+        # บันทึกไฟล์
         current_datetime = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
         output_file_name = f"output_data--{name_preset}--{current_datetime}.wav"
         output_file_path = os.path.join(output_folder, output_file_name)
 
-        save_audio_file(samples, output_file_path)
-        
+        print("\n :-> ", samples)
+
+        torch.save(samples, output_file_path)
         print(f"\n =>>> Data saved to {output_file_path}")
-        model.to('cpu')
-        message = f"full into {len(sentences)} sentences"
-        output_message, samples = message, (len(sentences), samples.squeeze(0).cpu().numpy())
-        print('\n output_message ', output_message)
-        print('\n samples ', samples)
+
         return output_message, samples
-        
-
-
-        # print("\n >>>>> model.to('cpu') <<<<< ")
-        # model.to('cpu')
-        # message = f"full into {len(sentences)} sentences"
-        # output_message, samples = message, (len(sentences), samples.squeeze(0).cpu().numpy())
-
-        # # ตรวจสอบและสร้างโฟลเดอร์ถ้าไม่มี
-        # output_folder = "export_me"
-        # if not os.path.exists(output_folder):
-        #     print("\n --- if not os.path.exists(output_folder)")
-        #     os.makedirs(output_folder)
-
-        # # บันทึกไฟล์
-        # current_datetime = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-        # output_file_name = f"output_data--{name_preset}--{current_datetime}.wav"
-        # output_file_path = os.path.join(output_folder, output_file_name)
-
-        # print("\n :-> ", samples)
-
-        # torch.save(samples, output_file_path)
-        # print(f"\n =>>> Data saved to {output_file_path}")
-
-        # return output_message, samples
     
 
 
