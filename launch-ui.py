@@ -9,8 +9,6 @@ import platform
 import webbrowser
 import sys
 from datetime import datetime
-import sounddevice as sd
-import soundfile as sf
 
 print(f"default encoding is {sys.getdefaultencoding()},file system encoding is {sys.getfilesystemencoding()}")
 print(f"You are using Python version {platform.python_version()}")

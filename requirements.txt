@@ -22,4 +22,3 @@ sudachipy
 sudachidict_core
 vocos
 pyngrok
-sounddevice
