@@ -1,6 +1,12 @@
-Python 3.10
+Python 3.10.12
 
-https://www.youtube.com/watch?v=7qgfoVFQmvk&t=202s
+วิธีรันมาใช้: https://colab.research.google.com/drive/1CVT3bHgDlsbJWFfPVxTWOt2GfarPFaIM#scrollTo=h43U3BuZiep8
+
+
+![alt text](image.png)
+
+
+youtube: https://www.youtube.com/watch?v=7qgfoVFQmvk&t=202s
 
 
 # VALL-E X: Multilingual Text-to-Speech Synthesis and Voice Cloning 🔊
