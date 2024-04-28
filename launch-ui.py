@@ -501,14 +501,15 @@ def infer_long_text(text, preset_prompt, prompt=None, language='auto', accent='n
         if not os.path.exists(output_folder):
             os.makedirs(output_folder)
 
-        # model.to('cpu')
-        # message = f"Cut into {len(sentences)} sentences"
-        # return message, (24000, samples.squeeze(0).cpu().numpy())
-    
         print("\n >>>>> model.to('cpu') <<<<< ")
+
         model.to('cpu')
-        message = f"full into {len(sentences)} sentences"
-        output_message, samples = message, (len(sentences), samples.squeeze(0).cpu().numpy())
+        message = f"Cut into {len(sentences)} sentences"
+        output_message, samples = message, (24000, samples.squeeze(0).cpu().numpy())
+    
+        # model.to('cpu')
+        # message = f"full into {len(sentences)} sentences"
+        # output_message, samples = message, (len(sentences), samples.squeeze(0).cpu().numpy())
 
         # บันทึกไฟล์
         current_datetime = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
