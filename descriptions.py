@@ -1,8 +1,4 @@
 top_md = """
-# VALL-E X  
-VALL-E X can synthesize high-quality personalized speech with only a 3-second enrolled recording of 
-an unseen speaker as an acoustic prompt, even in another language for a monolingual speaker.<br>
-This implementation supports zero-shot, mono-lingual/cross-lingual text-to-speech functionality of three languages (English, Chinese, Japanese)<br>  
 See this [demo](https://plachtaa.github.io/) page for more details.
 """
 

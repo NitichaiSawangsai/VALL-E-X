@@ -513,7 +513,6 @@ def main():
     with app:
         gr.Markdown(top_md)
         with gr.Tab("Infer from audio"):
-            gr.Markdown(infer_from_audio_md)
             with gr.Row():
                 with gr.Column():
 
