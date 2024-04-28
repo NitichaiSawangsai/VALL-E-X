@@ -500,6 +500,7 @@ def infer_long_text(text, preset_prompt, prompt=None, language='auto', accent='n
         output_folder = "export_me"
         if not os.path.exists(output_folder):
             os.makedirs(output_folder)
+            print(f"\n +++ create folder: {output_folder}  ")
 
         print("\n >>>>> model.to('cpu') <<<<< ")
         samplerate = 24000
@@ -519,7 +520,7 @@ def infer_long_text(text, preset_prompt, prompt=None, language='auto', accent='n
         output_file_path = os.path.join(output_folder, output_file_name)
         
         try:
-            sf.write(output_file_name, samples[1], samplerate=samplerate)
+            sf.write(output_file_path, samples[1], samplerate=samplerate)
             print("บันทึกไฟล์เสียงสำเร็จ")
         except Exception as e:
             print("เกิดข้อผิดพลาดในการบันทึกไฟล์เสียง:", e)
