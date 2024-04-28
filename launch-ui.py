@@ -523,6 +523,8 @@ def infer_long_text(text, preset_prompt, prompt=None, language='auto', accent='n
         model.to('cpu')
         message = f"full into {len(sentences)} sentences"
         output_message, samples = message, (len(sentences), samples.squeeze(0).cpu().numpy())
+        print('\n output_message ', output_message)
+        print('\n samples ', samples)
         return output_message, samples
         
 
