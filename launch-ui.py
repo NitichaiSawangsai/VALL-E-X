@@ -522,7 +522,9 @@ def infer_long_text(text, preset_prompt, prompt=None, language='auto', accent='n
         output_file_path = os.path.join(output_folder, output_file_name)
         
         try:
-            write(output_file_path, rate, samples)
+            data = np.random.uniform(-1, 1, rate) # 1 second worth of random samples between -1 and 1
+            scaled = np.int16(data / np.max(np.abs(data)) * 32767)
+            write(output_file_path, rate, scaled)
             print("บันทึกไฟล์เสียงสำเร็จ")
         except Exception as e:
             print("เกิดข้อผิดพลาดในการบันทึกไฟล์เสียง:", e)
