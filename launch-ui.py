@@ -522,7 +522,7 @@ def infer_long_text(text, preset_prompt, prompt=None, language='auto', accent='n
         output_file_path = os.path.join(output_folder, output_file_name)
         
         try:
-            write(output_file_path, samples)
+            write(output_file_path, rate, samples)
             print("บันทึกไฟล์เสียงสำเร็จ")
         except Exception as e:
             print("เกิดข้อผิดพลาดในการบันทึกไฟล์เสียง:", e)
