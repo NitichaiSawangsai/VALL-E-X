@@ -9,6 +9,8 @@ import platform
 import webbrowser
 import sys
 from datetime import datetime
+import sounddevice as sd
+import soundfile as sf
 
 print(f"default encoding is {sys.getdefaultencoding()},file system encoding is {sys.getfilesystemencoding()}")
 print(f"You are using Python version {platform.python_version()}")
@@ -509,7 +511,7 @@ def infer_long_text(text, preset_prompt, prompt=None, language='auto', accent='n
         print("\n >>>>> model.to('cpu') <<<<< ")
         model.to('cpu')
         message = f"full into {len(sentences)} sentences"
-        output_message, samples = message, (len(sentences), samples.squeeze(0).cpu().numpy())
+        output_message, samples = message, (24000, samples.squeeze(0).cpu().numpy())
 
         # ตรวจสอบและสร้างโฟลเดอร์ถ้าไม่มี
         output_folder = "export_me"
