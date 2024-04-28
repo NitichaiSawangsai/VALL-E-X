@@ -374,20 +374,36 @@ def infer_long_text(text, preset_prompt, prompt=None, language='auto', accent='n
     fixed-prompt: This mode will keep using the same prompt the user has provided, and generate audio sentence by sentence.
     sliding-window: This mode will use the last sentence as the prompt for the next sentence, but has some concern on speaker maintenance.
     """
+
     mode = 'fixed-prompt'
     global model, audio_tokenizer, text_tokenizer, text_collater
     model.to(device)
+    print('mode: +>>> ', mode)
     if (prompt is None or prompt == "") and preset_prompt == "":
         mode = 'sliding-window'  # If no prompt is given, use sliding-window mode
+        print(f"if 1 >>>> if (prompt is None or prompt == '') and preset_prompt == '' mode:",mode)
     sentences = split_text_into_sentences(text)
+    print('\text: ')
+    print(text)
+    print('\nsentences: ')
+    print(sentences)
     # detect language
     if language == "auto-detect":
+        print(f"if 2 >>>> if language == 'auto-detect'")
         language = langid.classify(text)[0]
+        print('\text: ')
+        print(text)
+        print('\language: ')
+        print(language)
     else:
+        print(f"else 2 >>>> if language == 'auto-detect'")
         language = token2lang[langdropdown2token[language]]
+        print('\language: ')
+        print(language)
 
     # if initial prompt is given, encode it
     if prompt is not None and prompt != "":
+        print(f"if 3 >>>> if prompt is not None and prompt !=  ''")
         # load prompt
         prompt_data = np.load(prompt.name)
         audio_prompts = prompt_data['audio_tokens']
@@ -399,6 +415,7 @@ def infer_long_text(text, preset_prompt, prompt=None, language='auto', accent='n
         audio_prompts = torch.tensor(audio_prompts).type(torch.int32).to(device)
         text_prompts = torch.tensor(text_prompts).type(torch.int32)
     elif preset_prompt is not None and preset_prompt != "":
+        print(f"if 3 >>>>  elif preset_prompt is not None and preset_prompt != ''")
         prompt_data = np.load(os.path.join("./presets/", f"{preset_prompt}.npz"))
         audio_prompts = prompt_data['audio_tokens']
         text_prompts = prompt_data['text_tokens']
@@ -409,14 +426,18 @@ def infer_long_text(text, preset_prompt, prompt=None, language='auto', accent='n
         audio_prompts = torch.tensor(audio_prompts).type(torch.int32).to(device)
         text_prompts = torch.tensor(text_prompts).type(torch.int32)
     else:
+        print(f"else 3 >>>>  ")
         audio_prompts = torch.zeros([1, 0, NUM_QUANTIZERS]).type(torch.int32).to(device)
         text_prompts = torch.zeros([1, 0]).type(torch.int32)
         lang_pr = language if language != 'mix' else 'en'
     if mode == 'fixed-prompt':
+        print(f"if 4 >>>>  if mode == 'fixed-prompt'")
         complete_tokens = torch.zeros([1, NUM_QUANTIZERS, 0]).type(torch.LongTensor).to(device)
         for text in sentences:
+            print(f"for sentences >>>>  text: ",text)
             text = text.replace("\n", "").strip(" ")
             if text == "":
+                print(f"if 5 >>>> text == '' ")
                 continue
             lang_token = lang2token[language]
             lang = token2lang[lang_token]
@@ -455,10 +476,12 @@ def infer_long_text(text, preset_prompt, prompt=None, language='auto', accent='n
         message = f"Cut into {len(sentences)} sentences"
         return message, (24000, samples.squeeze(0).cpu().numpy())
     elif mode == "sliding-window":
+        print(f"elif 5 >>>> mode == 'sliding-window'")
         complete_tokens = torch.zeros([1, NUM_QUANTIZERS, 0]).type(torch.LongTensor).to(device)
         original_audio_prompts = audio_prompts
         original_text_prompts = text_prompts
         for text in sentences:
+            print(f"for sentences >>>>  text: ",text)
             text = text.replace("\n", "").strip(" ")
             if text == "":
                 continue
@@ -503,8 +526,11 @@ def infer_long_text(text, preset_prompt, prompt=None, language='auto', accent='n
 
         model.to('cpu')
         message = f"Cut into {len(sentences)} sentences"
+        print("Message:", message)
+        print("Data:", (24000, samples.squeeze(0).cpu().numpy()))
         return message, (24000, samples.squeeze(0).cpu().numpy())
     else:
+        print(f"else 5")
         raise ValueError(f"No such mode {mode}")
 
 
