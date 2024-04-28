@@ -9,8 +9,7 @@ import platform
 import webbrowser
 import sys
 from datetime import datetime
-import librosa
-import soundfile as sf
+from scipy.io.wavfile import write
 
 print(f"default encoding is {sys.getdefaultencoding()},file system encoding is {sys.getfilesystemencoding()}")
 print(f"You are using Python version {platform.python_version()}")
@@ -498,16 +497,17 @@ def infer_long_text(text, preset_prompt, prompt=None, language='auto', accent='n
         samples = vocos.decode(features, bandwidth_id=torch.tensor([2], device=device))
         print(f"\n samples:  ", samples)
 
-        # ตัวอย่างการใช้งาน
         output_folder = "export_me"
         if not os.path.exists(output_folder):
             os.makedirs(output_folder)
+            print("\n >>>>> create folder: {output_folder}  <<<<< ")
+
 
         print("\n >>>>> model.to('cpu') <<<<< ")
 
         model.to('cpu')
         message = f"Cut into {len(sentences)} sentences"
-        output_message, samples = message, (24000, samples.squeeze(0).cpu().numpy())
+        output_message, samples = message, (24000, samples.squeeze(0).cpu().numpy())        
     
         # model.to('cpu')
         # message = f"full into {len(sentences)} sentences"
@@ -521,7 +521,10 @@ def infer_long_text(text, preset_prompt, prompt=None, language='auto', accent='n
         output_file_path = os.path.join(output_folder, output_file_name)
         
         try:
-            sf.write(output_file_name, samples[1], samplerate=24000)
+            rate = 44100
+            data = np.random.uniform(-1, 1, rate) # 1 second worth of random samples between -1 and 1
+            scaled = np.int16(data / np.max(np.abs(data)) * 32767)
+            write(output_file_path, rate, scaled)
             print("บันทึกไฟล์เสียงสำเร็จ")
         except Exception as e:
             print("เกิดข้อผิดพลาดในการบันทึกไฟล์เสียง:", e)
