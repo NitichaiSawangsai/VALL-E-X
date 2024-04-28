@@ -8,6 +8,8 @@ import tempfile
 import platform
 import webbrowser
 import sys
+from datetime import datetime
+
 print(f"default encoding is {sys.getdefaultencoding()},file system encoding is {sys.getfilesystemencoding()}")
 print(f"You are using Python version {platform.python_version()}")
 if(sys.version_info[0]<3 or sys.version_info[1]<7):
@@ -399,10 +401,12 @@ def infer_long_text(text, preset_prompt, prompt=None, language='auto', accent='n
         language = token2lang[langdropdown2token[language]]
         print('\language: ')
         print(language) # en
-
+    
+    name_preset='none'
     # if initial prompt is given, encode it
     if prompt is not None and prompt != "":
         print(f"if 3 >>>> if prompt is not None and prompt !=  ''")
+        name_preset = prompt.name
         # load prompt
         prompt_data = np.load(prompt.name)
         audio_prompts = prompt_data['audio_tokens']
@@ -414,7 +418,8 @@ def infer_long_text(text, preset_prompt, prompt=None, language='auto', accent='n
         audio_prompts = torch.tensor(audio_prompts).type(torch.int32).to(device)
         text_prompts = torch.tensor(text_prompts).type(torch.int32)
     elif preset_prompt is not None and preset_prompt != "":
-        print(f"if 3 >>>>  elif preset_prompt is not None and preset_prompt != ''")
+        print(f"if 3 >>>>  elif preset_prompt is not None and preset_prompt != ''", preset_prompt)
+        name_preset = preset_prompt
         prompt_data = np.load(os.path.join("./presets/", f"{preset_prompt}.npz"))
         audio_prompts = prompt_data['audio_tokens']
         text_prompts = prompt_data['text_tokens']
@@ -501,6 +506,7 @@ def infer_long_text(text, preset_prompt, prompt=None, language='auto', accent='n
         # return message, (len(sentences), samples.squeeze(0).cpu().numpy())
         
         
+        print("\n >>>>> model.to('cpu') <<<<< ")
         model.to('cpu')
         message = f"full into {len(sentences)} sentences"
         output_message, samples = message, (len(sentences), samples.squeeze(0).cpu().numpy())
@@ -508,11 +514,15 @@ def infer_long_text(text, preset_prompt, prompt=None, language='auto', accent='n
         # ตรวจสอบและสร้างโฟลเดอร์ถ้าไม่มี
         output_folder = "export_me"
         if not os.path.exists(output_folder):
+            print("\n --- if not os.path.exists(output_folder)")
             os.makedirs(output_folder)
 
         # บันทึกไฟล์
-        output_file_name = "output_data.wav"  # เปลี่ยนนามสกุลไฟล์เป็น ".wav"
+        current_datetime = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+        output_file_name = f"output_data--{name_preset}--{current_datetime}.wav"
         output_file_path = os.path.join(output_folder, output_file_name)
+
+        print("\n :-> ", samples)
 
         torch.save(samples, output_file_path)
         print(f"\n =>>> Data saved to {output_file_path}")
@@ -688,7 +698,11 @@ def main():
                     btn_4.click(infer_long_text,
                               inputs=[textbox_4, preset_dropdown_4, prompt_file_4, language_dropdown_4, accent_dropdown_4],
                               outputs=[text_output_4, audio_output_4])
-
+    
+    from pyngrok import ngrok
+    ngrok.kill()
+    http_tunnel = ngrok.connect(7860)
+    print("URL:", http_tunnel.public_url)
     webbrowser.open("http://127.0.0.1:7860")
     app.launch()
 
