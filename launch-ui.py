@@ -699,10 +699,6 @@ def main():
                               inputs=[textbox_4, preset_dropdown_4, prompt_file_4, language_dropdown_4, accent_dropdown_4],
                               outputs=[text_output_4, audio_output_4])
     
-    from pyngrok import ngrok
-    ngrok.kill()
-    http_tunnel = ngrok.connect(7860)
-    print("URL:", http_tunnel.public_url)
     webbrowser.open("http://127.0.0.1:7860")
     app.launch()
 
