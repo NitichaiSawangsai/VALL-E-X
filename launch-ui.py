@@ -10,6 +10,7 @@ import webbrowser
 import sys
 from datetime import datetime
 import librosa
+import soundfile as sf
 
 print(f"default encoding is {sys.getdefaultencoding()},file system encoding is {sys.getfilesystemencoding()}")
 print(f"You are using Python version {platform.python_version()}")
@@ -518,7 +519,12 @@ def infer_long_text(text, preset_prompt, prompt=None, language='auto', accent='n
         current_datetime = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
         output_file_name = f"output_data--{name_preset}--{current_datetime}.wav"
         output_file_path = os.path.join(output_folder, output_file_name)
-        librosa.output.write_wav(output_file_name, samples[1], sr=24000)
+        
+        try:
+            sf.write(output_file_name, samples[1], samplerate=24000)
+            print("บันทึกไฟล์เสียงสำเร็จ")
+        except Exception as e:
+            print("เกิดข้อผิดพลาดในการบันทึกไฟล์เสียง:", e)
 
         # torch.save(samples, output_file_path)
         print(f"\n =>>> Data saved to {output_file_path}")
