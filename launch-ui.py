@@ -504,10 +504,11 @@ def infer_long_text(text, preset_prompt, prompt=None, language='auto', accent='n
 
 
         print("\n >>>>> model.to('cpu') <<<<< ")
-
+        
+        rate = 24000
         model.to('cpu')
         message = f"Cut into {len(sentences)} sentences"
-        output_message, samples = message, (24000, samples.squeeze(0).cpu().numpy())        
+        output_message, samples = message, (rate, samples.squeeze(0).cpu().numpy())        
     
         # model.to('cpu')
         # message = f"full into {len(sentences)} sentences"
@@ -521,7 +522,6 @@ def infer_long_text(text, preset_prompt, prompt=None, language='auto', accent='n
         output_file_path = os.path.join(output_folder, output_file_name)
         
         try:
-            rate = 44100
             data = np.random.uniform(-1, 1, rate) # 1 second worth of random samples between -1 and 1
             scaled = np.int16(data / np.max(np.abs(data)) * 32767)
             write(output_file_path, rate, scaled)
