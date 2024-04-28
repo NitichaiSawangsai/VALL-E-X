@@ -10,6 +10,10 @@ import webbrowser
 import sys
 from datetime import datetime
 import soundfile as sf
+import pytz
+
+tz = pytz.timezone('Asia/Bangkok')
+current_time = datetime.now(tz)
 
 print(f"default encoding is {sys.getdefaultencoding()},file system encoding is {sys.getfilesystemencoding()}")
 print(f"You are using Python version {platform.python_version()}")
@@ -475,6 +479,8 @@ def infer_long_text(text, preset_prompt, prompt=None, language='auto', accent='n
             # accent control
             lang = lang if accent == "no-accent" else token2lang[langdropdown2token[accent]]
             print(f"\n lang:  ", lang)
+            print(f"\n #### training data")
+            #### training data
             encoded_frames = model.inference(
                 text_tokens.to(device),
                 text_tokens_lens.to(device),
@@ -515,7 +521,7 @@ def infer_long_text(text, preset_prompt, prompt=None, language='auto', accent='n
         print("\n :-> ", samples)
 
         # บันทึกไฟล์
-        current_datetime = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+        current_datetime = current_time.strftime("%Y-%m-%d-%H-%M-%S")
         output_file_name = f"output_data--{name_preset}--{current_datetime}.wav"
         output_file_path = os.path.join(output_folder, output_file_name)
         
