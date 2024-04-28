@@ -378,7 +378,6 @@ def infer_long_text(text, preset_prompt, prompt=None, language='auto', accent='n
     mode = 'fixed-prompt'
     global model, audio_tokenizer, text_tokenizer, text_collater
     model.to(device)
-    print('mode: +>>> ', mode)
     if (prompt is None or prompt == "") and preset_prompt == "":
         mode = 'sliding-window'  # If no prompt is given, use sliding-window mode
         print(f"if 1 >>>> if (prompt is None or prompt == '') and preset_prompt == '' mode:",mode)
@@ -399,7 +398,7 @@ def infer_long_text(text, preset_prompt, prompt=None, language='auto', accent='n
         print(f"else 2 >>>> if language == 'auto-detect'")
         language = token2lang[langdropdown2token[language]]
         print('\language: ')
-        print(language)
+        print(language) # en
 
     # if initial prompt is given, encode it
     if prompt is not None and prompt != "":
@@ -430,9 +429,14 @@ def infer_long_text(text, preset_prompt, prompt=None, language='auto', accent='n
         audio_prompts = torch.zeros([1, 0, NUM_QUANTIZERS]).type(torch.int32).to(device)
         text_prompts = torch.zeros([1, 0]).type(torch.int32)
         lang_pr = language if language != 'mix' else 'en'
+
     if mode == 'fixed-prompt':
         print(f"if 4 >>>>  if mode == 'fixed-prompt'")
         complete_tokens = torch.zeros([1, NUM_QUANTIZERS, 0]).type(torch.LongTensor).to(device)
+        print("\n NUM_QUANTIZERS : ", NUM_QUANTIZERS)
+        print("\n type : ", torch.LongTensor)
+        print("\n device : ", device)
+        print("\n complete_tokens : ", complete_tokens)
         for text in sentences:
             print(f"for sentences >>>>  text: ",text)
             text = text.replace("\n", "").strip(" ")
@@ -440,21 +444,31 @@ def infer_long_text(text, preset_prompt, prompt=None, language='auto', accent='n
                 print(f"if 5 >>>> text == '' ")
                 continue
             lang_token = lang2token[language]
+            print(f"\nlanguage ", language)
+            print(f"\nlang_token ", lang_token)
             lang = token2lang[lang_token]
+            print(f"\nlang ", lang)
             text = lang_token + text + lang_token
+            print(f"\n lang_token + text + lang_token:  ", text)
 
             enroll_x_lens = text_prompts.shape[-1]
+            print(f"\n enroll_x_lens:  ", text_prompts)
             logging.info(f"synthesize text: {text}")
             phone_tokens, langs = text_tokenizer.tokenize(text=f"_{text}".strip())
+            print(f"\n phone_tokens, langs:  ", phone_tokens, langs)
             text_tokens, text_tokens_lens = text_collater(
                 [
                     phone_tokens
                 ]
             )
+            print(f"\n text_tokens, text_tokens_lens:  ", text_tokens, text_tokens_lens)
             text_tokens = torch.cat([text_prompts, text_tokens], dim=-1)
+            print(f"\n text_tokens:  ", text_tokens)
             text_tokens_lens += enroll_x_lens
+            print(f"\n text_tokens_lens:  ", text_tokens_lens)
             # accent control
             lang = lang if accent == "no-accent" else token2lang[langdropdown2token[accent]]
+            print(f"\n lang:  ", lang)
             encoded_frames = model.inference(
                 text_tokens.to(device),
                 text_tokens_lens.to(device),
@@ -466,15 +480,47 @@ def infer_long_text(text, preset_prompt, prompt=None, language='auto', accent='n
                 text_language=langs if accent == "no-accent" else lang,
                 best_of=5,
             )
+            print(f"\n encoded_frames:  ", encoded_frames)
             complete_tokens = torch.cat([complete_tokens, encoded_frames.transpose(2, 1)], dim=-1)
+            print(f"\n complete_tokens:  ", complete_tokens)
         # Decode with Vocos
         frames = complete_tokens.permute(1, 0, 2)
+        print(f"\n frames:  ", frames)
         features = vocos.codes_to_features(frames)
+        print(f"\n features:  ", features)
         samples = vocos.decode(features, bandwidth_id=torch.tensor([2], device=device))
+        print(f"\n samples:  ", samples)
 
+        # model.to('cpu')
+        # message = f"Cut into {len(sentences)} sentences"
+        # return message, (24000, samples.squeeze(0).cpu().numpy())
+    
+
+        # model.to('cpu')
+        # message = f"Cut into {len(sentences)} sentences"
+        # return message, (len(sentences), samples.squeeze(0).cpu().numpy())
+        
+        
         model.to('cpu')
-        message = f"Cut into {len(sentences)} sentences"
-        return message, (24000, samples.squeeze(0).cpu().numpy())
+        message = f"full into {len(sentences)} sentences"
+        output_message, samples = message, (len(sentences), samples.squeeze(0).cpu().numpy())
+
+        # ตรวจสอบและสร้างโฟลเดอร์ถ้าไม่มี
+        output_folder = "export_me"
+        if not os.path.exists(output_folder):
+            os.makedirs(output_folder)
+
+        # บันทึกไฟล์
+        output_file_name = "output_data.wav"  # เปลี่ยนนามสกุลไฟล์เป็น ".wav"
+        output_file_path = os.path.join(output_folder, output_file_name)
+
+        torch.save(samples, output_file_path)
+        print(f"\n =>>> Data saved to {output_file_path}")
+
+        return output_message, samples
+    
+
+
     elif mode == "sliding-window":
         print(f"elif 5 >>>> mode == 'sliding-window'")
         complete_tokens = torch.zeros([1, NUM_QUANTIZERS, 0]).type(torch.LongTensor).to(device)
