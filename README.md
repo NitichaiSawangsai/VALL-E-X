@@ -1,7 +1,7 @@
 Python 3.10.12
 
-วิธีรันมาใช้: https://colab.research.google.com/drive/1CVT3bHgDlsbJWFfPVxTWOt2GfarPFaIM#scrollTo=h43U3BuZiep8
-
+วิธีรันมาใช้: https://colab.research.google.com voice-engine-on-web.ipynb
+หรือดู forder Colab Notebooks
 
 ![alt text](image.png)
 
